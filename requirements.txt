@@ -1,0 +1,4 @@
+SpeechRecognition[audio]
+PyGetWindow
+PyAutoGUI
+pyinstaller
