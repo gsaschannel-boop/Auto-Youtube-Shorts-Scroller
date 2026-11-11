@@ -3,6 +3,7 @@ import pygetwindow as gw
 import pyautogui
 import ctypes
 import time
+from pywinauto import Desktop
 
 with open("save_file.txt", "r") as file:
     lines = file.readlines()
@@ -17,11 +18,22 @@ user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
 
 
+def get_chrome_url(hwnd) -> str:
+    try:
+        chrome = Desktop(backend="uia").window(handle=hwnd).wrapper_object()
+        for edit in chrome.descendants(control_type="Edit"):
+            if edit.element_info.name == "Address and search bar":
+                return edit.get_value()
+    except Exception:
+        pass
+    return ""
+
+
 def find_shorts_window() -> gw.Window | None:
     for w in gw.getAllWindows():
         if "YouTube" in w.title and "Google Chrome" in w.title:
-            return w
-        
+            if "youtube.com/shorts" in get_chrome_url(w._hWnd):
+                return w
     return None
 
 def focus(hwnd) -> None:
